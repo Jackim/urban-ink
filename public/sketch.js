@@ -111,7 +111,7 @@ function draw() {
     //sandBezier([points.a, points.b, points.c, points.d], 0.15, 5000, false, false);
     sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, true);
     rotate(180);
-    sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, false);
+    sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, true);
     
     //sandBezier([points2.a, points2.c, points2.b, points2.d], 0.1, 5000, false, true);
     //sandBezier([points3.a, points3.c, points3.b, points3.d], 0.1, 2500, false, false);
