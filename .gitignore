@@ -43,3 +43,6 @@ jspm_packages
 # packaged app
 build
 dist
+
+# Images
+img

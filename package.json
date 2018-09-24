@@ -21,9 +21,9 @@
     "author": "Jose Luis Garcia del Castillo",
     "license": "tbd",
     "devDependencies": {
-        "electron": "^1.4.1",
-        "electron-builder": "20.2.0",
-        "electron-reload": "^1.2.2"
+        "electron": "latest",
+        "electron-builder": "latest",
+        "electron-reload": "latest"
     },
     "dependencies": {
         "p5": "^0.7.2"
