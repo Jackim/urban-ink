@@ -14,7 +14,6 @@ function setup() {
     g.fc = frameCount;
     createCanvas(C_WIDTH, C_HEIGHT);
     angleMode(DEGREES);
-    //noLoop();
     frameRate(120);
     algos[ALGO].init();
 }
