@@ -1,33 +1,22 @@
 const utils = require('../public/utils/index.js');
 const prim = require('../public/primitives/index.js');
+const algos = require('../public/algorithms/index.js');
 
-var xPos = 0;
-var a = 0;
-var points;
-var seed;
-var seed2;
-var saved = false;
+var g = {
+    saved: false
+};
 
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-}
+const ALGO = "SandSpiral";
+const C_WIDTH = 1920 * 4;
+const C_HEIGHT = 1080 * 4;
 
 function setup() {
-    createCanvas(windowWidth, windowHeight);
+    g.fc = frameCount;
+    createCanvas(C_WIDTH, C_HEIGHT);
     angleMode(DEGREES);
-    background(20);
     //noLoop();
     frameRate(120);
-    points = {
-        a: [-width/3, -height/3], // control 1
-        b: [-width/2, 0], // anchor 1
-        c: [width/2, 0], // anchor 2
-        d: [width/3, -height/3] //control 2
-    };
-    seed = utils.randInt(-height/2,height/2);
-    seed = 2;
-    seed2 = 0.024;
-    console.log(seed);
+    algos[ALGO].init();
 }
 
 function examples() {
@@ -69,45 +58,13 @@ function examples() {
 }
 
 function draw() {
-    stroke(255)
-    translate(width / 2, height / 2);
-    noFill();
-    push();
-    seed += Math.round(utils.jitter());
-    seed2 += Math.round(utils.jitter());
-    points = {
-        a: [a/2 * tan(a) + seed, a/2 * cos(a) + seed],
-        b: [a/2 * cos(a) + seed, a/2 * sin(a) + seed],
-        c: [a/2 * tan(a) - seed, a/2 * cos(a) - seed],
-        d: [a/2 * cos(a) - seed, a/2 * sin(a) - seed]
-    };
-    points2 = {
-        a: [a * tan(a) + seed2, a * cos(a) + seed2],
-        b: [a * cos(a) + seed2, a * sin(a) + seed2],
-        c: [a * tan(a) - seed2, a * cos(a) - seed2],
-        d: [a * cos(a) - seed2, a * sin(a) - seed2]
-    };
-    points3 = {
-        a: [a * tan(a) / seed2, a * cos(a) / seed2],
-        b: [a * cos(a) / seed2, a * sin(a) / seed2],
-        c: [a * tan(a) / seed2, a * cos(a) / seed2],
-        d: [a * cos(a) / seed2, a * sin(a) / seed2]
-    };
-    points4 = {
-        a: [a * tan(a) / seed, a * cos(a) / seed],
-        b: [a * cos(a) / seed, a * sin(a) / seed],
-        c: [a * tan(a) / seed, a * cos(a) / seed],
-        d: [a * cos(a) / seed, a * sin(a) / seed]
-    };
+    g.fc = frameCount;
+    algos[ALGO].run();
 
-    sandBezier([points.a, points.a, points.d, points.d], 0.01, 50000, true, true);
-    sandBezier([points.a, points.d, points.a, points.d], 0.01, 50000, true, false);
-    a++;
-    xPos++;
-    if (xPos > 1500) {
+    if (g.fc > 1500) {
         noLoop();
-        if (!saved) {
-            saved = true;
+        if (!g.saved) {
+            g.saved = true;
             save('test.png');
         }
     }
@@ -118,7 +75,6 @@ function bezierLength(bezierCurve) {
     for (var i = 0; i < bezierCurve.length - 1; i++) {
         length += Math.hypot(bezierCurve[i][0] - bezierCurve[i+1][0], bezierCurve[i][1] - bezierCurve[i+1][1]);
     }
-    console.log(length);
     return length;
 }
 
@@ -198,7 +154,6 @@ function sparkler(start, level) {
     rotate(utils.randInt(0, 360));
     if (level > 1) {
         level--;
-
         sparkler(level);
     }
 }
