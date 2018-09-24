@@ -6,6 +6,7 @@ var a = 0;
 var points;
 var seed;
 var seed2;
+var saved = false;
 
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
@@ -24,8 +25,8 @@ function setup() {
         d: [width/3, -height/3] //control 2
     };
     seed = utils.randInt(-height/2,height/2);
-    seed = 24;
-    seed2 = 2.4;
+    seed = 2;
+    seed2 = 0.024;
     console.log(seed);
 }
 
@@ -75,10 +76,10 @@ function draw() {
     seed += Math.round(utils.jitter());
     seed2 += Math.round(utils.jitter());
     points = {
-        a: [a * tan(a) + seed, a * cos(a) + seed],
-        b: [a * cos(a) + seed, a * sin(a) + seed],
-        c: [a * tan(a) - seed, a * cos(a) - seed],
-        d: [a * cos(a) - seed, a * sin(a) - seed]
+        a: [a/2 * tan(a) + seed, a/2 * cos(a) + seed],
+        b: [a/2 * cos(a) + seed, a/2 * sin(a) + seed],
+        c: [a/2 * tan(a) - seed, a/2 * cos(a) - seed],
+        d: [a/2 * cos(a) - seed, a/2 * sin(a) - seed]
     };
     points2 = {
         a: [a * tan(a) + seed2, a * cos(a) + seed2],
@@ -98,28 +99,17 @@ function draw() {
         c: [a * tan(a) / seed, a * cos(a) / seed],
         d: [a * cos(a) / seed, a * sin(a) / seed]
     };
-    //sandBezier([points.a, points.b, points.c, points.d], 0.15, 5000, false, false);
-    //sandBezier([points.a, points.b, points.c, points.d], 0.15, 2500, false, false);
-    
-    //sandBezier([points2.a, points2.c, points2.b, points2.d], 0.1, 5000, false, true);
-    //sandBezier([points3.a, points3.c, points3.b, points3.d], 0.1, 2500, false, false);
-    sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, false);
-    rotate(180);
-    sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, false);
-    push()
-    scale(-1,1);
-    //sandBezier([points.a, points.b, points.c, points.d], 0.15, 5000, false, false);
-    sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, true);
-    rotate(180);
-    sandBezier([points4.a, points.b, points.c, points3.d], 0.15, 2500, false, true);
-    
-    //sandBezier([points2.a, points2.c, points2.b, points2.d], 0.1, 5000, false, true);
-    //sandBezier([points3.a, points3.c, points3.b, points3.d], 0.1, 2500, false, false);
-    pop();
+
+    sandBezier([points.a, points.a, points.d, points.d], 0.01, 50000, true, true);
+    sandBezier([points.a, points.d, points.a, points.d], 0.01, 50000, true, false);
     a++;
     xPos++;
     if (xPos > 1500) {
         noLoop();
+        if (!saved) {
+            saved = true;
+            save('test.png');
+        }
     }
 }
 
@@ -145,7 +135,15 @@ function sandBezier(bezierCurve, chance, grains, jitter, useColor) {
             } else {
                 stroke(255, 255, 255, utils.randInt(0, 70));
             }
-            point(x, y);
+            if (x < width / 2) {
+                if (x > -width / 2) {
+                    if (y < height / 2) {
+                        if (y > -height / 2) {
+                            point(x, y);
+                        }
+                    }
+                }
+            }
         }
     }
 }
