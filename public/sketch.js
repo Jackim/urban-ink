@@ -6,16 +6,22 @@ var g = {
     saved: false
 };
 
-const ALGO = "SandSpiral";
-const C_WIDTH = 1920 * 4;
-const C_HEIGHT = 1080 * 4;
+var arr = [];
+
+const ALGO = "TempSandSpiral";
+var C_WIDTH = 1920 * 4;
+var C_HEIGHT = 1080 * 4;
 
 function setup() {
+    C_WIDTH = windowWidth;
+    C_HEIGHT = windowHeight;
     g.fc = frameCount;
     createCanvas(C_WIDTH, C_HEIGHT);
+    console.log(C_HEIGHT);
     angleMode(DEGREES);
     frameRate(120);
-    algos[ALGO].init();
+    arr.push(new algos[ALGO](100, 400, [0, 0]));
+    arr.push(new algos[ALGO](100, 400, [-100, 100]));
 }
 
 function examples() {
@@ -58,13 +64,17 @@ function examples() {
 
 function draw() {
     g.fc = frameCount;
-    algos[ALGO].run();
+    for (var i = 0; i < arr.length; i++) {
+        arr[i].run();
+    }
+
+    //new algos.TempSandSpiral(100, 400, [0, 0]);
 
     if (g.fc > 1500) {
         noLoop();
         if (!g.saved) {
             g.saved = true;
-            save('test.png');
+            //save('test.png');
         }
     }
 }

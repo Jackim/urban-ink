@@ -26,6 +26,7 @@
         "electron-reload": "1.2.5"
     },
     "dependencies": {
+        "npm": "^6.4.1",
         "p5": "^0.7.2"
     }
 }
