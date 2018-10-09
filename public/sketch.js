@@ -7,8 +7,8 @@ var g = {
 };
 
 const ALGO = "SandSpiral";
-const C_WIDTH = 1920 * 4;
-const C_HEIGHT = 1080 * 4;
+const C_WIDTH = 1920;
+const C_HEIGHT = 1080;
 
 function setup() {
     g.fc = frameCount;
