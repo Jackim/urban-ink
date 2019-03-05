@@ -57,6 +57,16 @@ module.exports = {
         }
     },
     Sprawl: class {
+        constructor() {
+            this.thestring = 'A'; // "axiom" or start of the string
+            this.numloops = 5; // how many iterations to pre-compute
+            this.therules = []; // array for rules
+            this.therules[0] = ['A', '-BF+AFA+FB-']; // first rule
+            this.therules[1] = ['B', '+AF-BFB-FA+']; // second rule
+            this.whereinstring = 0; // where in the L-system are we?
+            init();
+        }
+
         static init() {
             background(20);
         }
@@ -67,6 +77,10 @@ module.exports = {
             push();
         }
 
+        static lBranch(tree, part) {
+            if (part > 25) {
 
+            }
+        }
     }
 }

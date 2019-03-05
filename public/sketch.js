@@ -1,14 +1,17 @@
 const utils = require('../public/utils/index.js');
 const prim = require('../public/primitives/index.js');
-const algos = require('../public/algorithms/index.js');
 
 var g = {
     saved: false
 };
 
-const ALGO = "SandSpiral";
+const ALGO = "Sprawl";
 const C_WIDTH = 1920;
 const C_HEIGHT = 1080;
+
+function loader() {
+    g.algos = require('../public/algorithms')
+}
 
 function setup() {
     g.fc = frameCount;
@@ -75,32 +78,6 @@ function bezierLength(bezierCurve) {
         length += Math.hypot(bezierCurve[i][0] - bezierCurve[i+1][0], bezierCurve[i][1] - bezierCurve[i+1][1]);
     }
     return length;
-}
-
-function sandBezier(bezierCurve, chance, grains, jitter, useColor) {
-    var steps = grains ? grains : bezierLength(bezierCurve);
-    for (var i = 0; i < steps; i++) {
-        if (Math.random() < chance) {
-            var t = i / steps;
-            var x = bezierPoint(bezierCurve[0][0], bezierCurve[1][0], bezierCurve[2][0], bezierCurve[3][0], t);
-            var y = bezierPoint(bezierCurve[0][1], bezierCurve[1][1], bezierCurve[2][1], bezierCurve[3][1], t);
-            x = jitter ? x + utils.jitter(x) : x;
-            if (useColor) {
-                stroke(utils.randInt(0, 255 - i / steps * 255), utils.randInt(100, i / steps * 255), 255, utils.randInt(0, 70));
-            } else {
-                stroke(255, 255, 255, utils.randInt(0, 70));
-            }
-            if (x < width / 2) {
-                if (x > -width / 2) {
-                    if (y < height / 2) {
-                        if (y > -height / 2) {
-                            point(x, y);
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
 
 function curveLength(curveArr) {
