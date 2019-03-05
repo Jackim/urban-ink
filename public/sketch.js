@@ -17,11 +17,12 @@ function setup() {
     g.fc = frameCount;
     createCanvas(C_WIDTH, C_HEIGHT);
     angleMode(DEGREES);
-    frameRate(120);
-    algos[ALGO].init();
+    frameRate(6);
+    //algos[ALGO].init();
+    background(255);
 }
 
-function examples() {
+function butts() {
     for (var i = 0; i < 40; i++) {
         new prim.LineParent([i, 0], [sin(i) * 20, 50], [255, 255, 255, 0, 50], 2);
     }
@@ -38,6 +39,64 @@ function examples() {
     for (var i = 0; i < 10; i++) {
         //new LineParent([-i*1.5, -30], [-i*1.5, 30], [utils.randInt(0, 255), utils.randInt(0, 255), utils.randInt(0, 255), 0, 100], 2);
     }
+}
+
+function contour() {
+    pointsArr = {}
+    for (var i = 0; i < 10; i++) {
+        pointsArr[(i + 1) * 10] = []
+    }
+    console.log(pointsArr);
+    noiseX = random(100000);
+    noiseY = random(100000);
+    for (var x = 0; x < 500; x = x + 10) {
+        for (var y = 0; y < 500; y = y + 10) {
+            val = round(int(noise(x * 0.01 + noiseX, y * 0.01 + noiseY, 0.004) * 100) / 10) * 10;
+            pointsArr[val].push([x, y]);
+        }
+    }
+
+    for (var i = 0; i < 10; i++) {
+        num = (i + 1) * 10;
+        xsum = 0;
+        ysum = 0;
+        
+        for (var j = 0; j < pointsArr[num].length; j++) {
+            xsum = xsum + pointsArr[num][j][0];
+            ysum = ysum + pointsArr[num][j][1];
+        }
+
+        xavg = xsum / pointsArr[num].length;
+        yavg = ysum / pointsArr[num].length;
+
+        for (var j = 0; j < pointsArr[num].length; j++) {
+            p = pointsArr[num][j];
+            pointsArr[num][j][2] = atan2(p[1] - yavg, p[0] - xavg);
+        }
+
+        function sortByA(a, b) {
+            return a[2] - b[2];
+        }
+
+        pointsArr[num].sort(sortByA);
+    }
+
+    for (var i = 0; i < 10; i++) {
+        num = (i + 1) * 10;
+        beginShape();
+        noFill();
+        stroke(0);
+        for (var j = 0; j < pointsArr[num].length; j++) {
+            curveVertex(pointsArr[num][j][0], pointsArr[num][j][1]);
+        }
+        endShape();
+    }
+}
+
+
+function examples() {
+    
+    contour();
 
     //drawLines([0, 0], [0, 0], 5, [255, 255, 255, 10, 120]);
     /*
@@ -60,16 +119,19 @@ function examples() {
 }
 
 function draw() {
+    background(255);
     g.fc = frameCount;
-    algos[ALGO].run();
-
+    //algos[ALGO].run();
+    examples();
+    noLoop();
+/*
     if (g.fc > 1500) {
         noLoop();
         if (!g.saved) {
             g.saved = true;
-            save('test.png');
+            //save('test.png');
         }
-    }
+    }*/
 }
 
 function bezierLength(bezierCurve) {
