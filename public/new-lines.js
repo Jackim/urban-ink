@@ -1,9 +1,11 @@
+
 function setup() {
-    createCanvas(720, 400);
+    createCanvas(windowWidth, windowHeight);
     stroke(255);
     noFill();
     frameRate(30);
     colorMode(HSB, 100);
+    randomSeed(1);
 }
 
 function Curve(points) {
@@ -78,11 +80,12 @@ function drawBDots(bcur, colors) {
         var newy = bezierPoint(points[1], points[3], points[5], points[7], i);
         var distance = sqrt(sq(newx - lastx) + sq(newy - lasty));
         if (distance > 11) {
-            if (random() > (0.9 - (streak * 0.001))) {
+            if (random() > (0.92 - (streak * 0.001))) {
                 j++;
                 if (j == colors.length) {
                     j = 0;
                 }
+                streak = 0;
             } else {
                 streak++;
             }
@@ -99,6 +102,13 @@ function drawBDots(bcur, colors) {
     }
 }
 
+function drawBLines(cur) {
+    push();
+    stroke(0, 0, 100);
+    bezier(cur.points[0], cur.points[1], cur.points[2], cur.points[3], cur.points[4], cur.points[5], cur.points[6], cur.points[7]);
+    pop();
+}
+
 function drawDots(cur, colors) {
     // evenly space dots along a curve
     var points = cur.points;
@@ -112,7 +122,7 @@ function drawDots(cur, colors) {
         var newy = curvePoint(points[1], points[3], points[5], points[7], i);
         var distance = sqrt(sq(newx - lastx) + sq(newy - lasty));
         if (distance > 12) {
-            if (random() > (0.9 - (streak * 0.001))) {
+            if (random() > (0.98 - (streak * 0.001))) {
                 j++;
                 if (j == colors.length) {
                     j = 0;
@@ -120,9 +130,9 @@ function drawDots(cur, colors) {
             } else {
                 streak++;
             }
-            //if (!checkForCircle(newx, newy)) {
+            if (!checkForCircle(newx, newy)) {
                 new Dot(newx, newy, colors[j]);
-            //}
+            }
             lastx = newx;
             lasty = newy;
         }
@@ -132,25 +142,45 @@ function drawDots(cur, colors) {
 
 function createLines() {
     var colorArr = [color(95, 70, 61), color(0, 78, 82), color(11, 77, 92), color(0, 0, 90)];
-    var curves = [];
     var bcurves = [];
-    // curve: x control 1, y control 1, x1, y1, x2, y2, x control 2, y control 2
-    //curves.push(new Curve([100, 400, 100, 100, 500, 100, 400, 400]));
-    //curves.push(new Curve([100, 400, 100, 115, 500, 100, 415, 300]));
     
-    //bcurves.push(new BCurve([100, 100, 100, 0, 400, 0, 400, 100]));
+    // bcurve: x1, y1, x control 1, y control 1, x control 2, y control 2, x2, y2
+
     for (var i = 0; i < 20; i++) {
-        bcurves.push(new BCurve([100, 100 + (i * 10), 100, 100, 400, 0, 600, 100 + (i * 15)]))
+        bcurves.push(new BCurve([100, 100 + (i * 10), 150, 300, 400, 0, 600, 100 + (i * 15)]))
     }
     
     for (var i = 0; i < bcurves.length; i++) {
-        //drawDots(curves[i], colorArr);
-        drawBDots(bcurves[i], colorArr);
+        //drawBDots(bcurves[i], colorArr);
     }
+
+    for (var i = 0; i < bcurves.length; i++) {
+        //drawBLines(bcurves[i]);
+    }
+
+    // grid points
+
+    var vectors = [];
+    
+    for (var i = 0; i < windowWidth; i = i + 15) {
+        for (var j = 0; j < windowHeight; j = j + 15) {
+            //vectors.push({x1: i, y1: j, x2: i + 10, y2: j + 10});
+            vectors.push(createVector(i, j));
+        }
+    }
+
+    console.log(vectors[0]);
+    
 }
+
+function calc(x, y, len, angle) {
+    var x2 = x + (len * cos(angle));
+    var y2 = y + (len * sin(angle));
+    return {x: x2, y: y2};
+}
+
 function draw() {
     noLoop();
     background(0);
-    
     createLines();
 }  
