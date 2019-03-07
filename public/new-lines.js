@@ -6,6 +6,7 @@ function setup() {
     frameRate(30);
     colorMode(HSB, 100);
     randomSeed(1);
+    noiseSeed(1);
 }
 
 function Curve(points) {
@@ -162,15 +163,37 @@ function createLines() {
 
     var vectors = [];
     
-    for (var i = 0; i < windowWidth; i = i + 15) {
-        for (var j = 0; j < windowHeight; j = j + 15) {
-            //vectors.push({x1: i, y1: j, x2: i + 10, y2: j + 10});
-            vectors.push(createVector(i, j));
+    var counter = 0;
+    for (var i = 0; i < windowWidth; i = i + 40) {
+        vectors.push([]);
+        for (var j = 0; j < windowHeight; j = j + 40) {
+            var vec = calcVec(i - 200, j - 100);
+            vectors[counter].push(vec);
+            line(
+                i,
+                j,
+                i + 15 * cos(vec.heading()),
+                j + 15 * sin(vec.heading())
+            );
         }
+        counter++;
     }
 
-    console.log(vectors[0]);
+    for (var i in vectors) {
+        var i = int(i);
+        for (var j in vectors[i]) {
+            var j = int(j);
+            var left = vectors[i-1] ? vectors[i-1][j] : vectors[i][j];
+            var right = vectors[i+1] ? vectors[i+1][j] : vectors[i][j];
+            var up = vectors[i][j-1] ? vectors[i][j-1] : vectors[i][j];
+            var down = vectors[i][j+1] ? vectors[i][j+1] : vectors[i][j];
+        }
+    }
     
+}
+
+function calcVec(x, y) {
+    return new p5.Vector(y - x, -x - y);
 }
 
 function calc(x, y, len, angle) {
