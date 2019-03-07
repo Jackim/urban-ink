@@ -164,21 +164,17 @@ function createLines() {
     var vectors = [];
     
     var counter = 0;
-    for (var i = 0; i < windowWidth; i = i + 40) {
+    for (var i = 0; i < windowWidth; i++) {
         vectors.push([]);
-        for (var j = 0; j < windowHeight; j = j + 40) {
-            var vec = calcVec(i - 200, j - 100);
+        for (var j = 0; j < windowHeight; j++) {
+            var vec = createVector(i, j);
+            vec.set(i + 15 * cos(vec.heading()) + j, j + 15 * sin(vec.heading()) + i)
             vectors[counter].push(vec);
-            line(
-                i,
-                j,
-                i + 15 * cos(vec.heading()),
-                j + 15 * sin(vec.heading())
-            );
         }
         counter++;
     }
 
+    /*
     for (var i in vectors) {
         var i = int(i);
         for (var j in vectors[i]) {
@@ -189,7 +185,75 @@ function createLines() {
             var down = vectors[i][j+1] ? vectors[i][j+1] : vectors[i][j];
         }
     }
-    
+    */
+
+    var colors = [color(95, 70, 61), color(0, 78, 82), color(11, 77, 92), color(0, 0, 90)];
+
+    function drawOnLine(start, end, streak, color_counter) {
+        var last = createVector(start.x, start.y);
+        var newx;
+        var newy;
+
+        var i = 0.001;
+        
+        while (i < 1) {
+            var newVec = p5.Vector.lerp(last, end, i);
+            newVec.set(round(newVec.x), round(newVec.y));
+            newx = newVec.x;
+            newy = newVec.y;
+            var distance = sqrt(sq(newx - last.x) + sq(newy - last.y));
+            if (distance > 12) {
+                if (random() > (0.98 - (streak * 0.001))) {
+                    color_counter++;
+                    if (color_counter == colors.length) {
+                        color_counter = 0;
+                    }
+                    console.log('new color');
+                } else {
+                    streak++;
+                }
+                if (!checkForCircle(newx, newy)) {
+                    console.log(distance);
+                    new Dot(newx, newy, colors[color_counter]);
+                    console.log('made a new dot at: ' + newx + ', ' + newy);
+                }
+                last.set(newx, newy);
+            }
+            i = i + 0.001;
+        }
+
+        if (newx < 0 || newx > windowWidth || newy < 0 || newy > windowHeight) {
+            console.log('path ended');
+            return false;
+        }
+
+        var target = {
+            x: vectors[newx][newy].x,
+            y: vectors[newx][newy].y
+        };
+
+        target = createVector(target.x, target.y);
+        drawOnLine({x: newx, y: newy}, target, streak, color_counter);
+    }
+
+    function traverseField(x, y) {
+        var startDrawing = false;
+        var hitEdge = false;
+
+        var targetx = vectors[x][y].x;
+        var targety = vectors[x][y].y;
+
+        drawOnLine({x: x, y: y}, vectors[x][y], 0, 0);
+
+    }
+
+    for (var i = 0; i < windowHeight; i = i + 15) {
+        traverseField(0, i);
+    }
+
+    for (var i = 15; i < windowWidth; i = i + 15) {
+        traverseField(i, 0);
+    }
 }
 
 function calcVec(x, y) {
