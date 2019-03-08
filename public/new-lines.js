@@ -144,9 +144,10 @@ function drawDots(cur, colors) {
 function createLines() {
     var colorArr = [color(95, 70, 61), color(0, 78, 82), color(11, 77, 92), color(0, 0, 90)];
 
-    var vectors = [];
+    //var vectors = [];
     
     // generate vector field
+    /*
     var counter = 0;
     for (var i = 0; i < windowWidth; i++) {
         vectors.push([]);
@@ -164,16 +165,33 @@ function createLines() {
             vectors[counter].push(vec);
         }
         counter++;
+    }*/
+
+    function createVectorField() {
+        var vectorField = [];
+        for (var i = 0; i < windowWidth; i++) {
+            vectorField.push([]);
+            for (var j = 0; j < displayWidth; j++) {
+                //var x = - lerp(random(0, i), cos(i) * 2, random() + i);
+                // var y = lerp(cos(j) * sin(j), j * 2, cos(j));
+                var x = abs(i + noise(i));
+                var y = abs(j + (noise(j) - noise(cos(j)-2, i)));
+                vectorField[i].push(createVector(x, y));
+                //line(i * 15, j * 15, x * 15, y * 15);
+            }
+        }
+        return vectorField;
     }
+
+    var vectors = createVectorField();
+    console.log(vectors);
 
     var colors = [color(95, 70, 61), color(0, 78, 82), color(11, 77, 92), color(0, 0, 90)];
     var color_counter = 0;
 
     function drawOnLine(start, end) {
         var distance = sqrt(sq(end.x - start.x) + sq(end.y - start.y));
-        if (distance < 20) {
-            end.setMag(20);
-        }
+        end.setMag(50);
         var newx, newy;
         var streak = 0;
         color_counter = 0;
@@ -222,24 +240,26 @@ function createLines() {
         drawOnLine(createVector(x, y), vectors[x][y]);
     }
 
+    traverseField(0, 0);
+
     // left
     for (var i = 0; i < windowHeight; i++) {
-       traverseField(0, i);
+       //traverseField(0, i);
     }
 
     // top
     for (var i = 0; i < windowWidth; i++) {
-       traverseField(i, 0);
+       //traverseField(i, 0);
     }
 
     // right
     for (var i = 0; i < windowHeight; i++) {
-       traverseField(windowWidth - 1, i);
+       //traverseField(windowWidth - 1, i);
     }
 
     // bottom
     for (var i = 0; i < windowWidth; i++) {
-       traverseField(i, windowHeight - 1);
+       //traverseField(i, windowHeight - 1);
     }
 }
 
