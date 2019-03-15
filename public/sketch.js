@@ -7,14 +7,14 @@ var g = {
 };
 
 const ALGO = "SandSpiral";
-const C_WIDTH = 1920 * 4;
-const C_HEIGHT = 1080 * 4;
+const C_WIDTH = 1920 / 2;
+const C_HEIGHT = 1080 / 2;
 
 function setup() {
     g.fc = frameCount;
     createCanvas(C_WIDTH, C_HEIGHT);
     angleMode(DEGREES);
-    frameRate(120);
+    frameRate(30);
     algos[ALGO].init();
 }
 
@@ -58,13 +58,15 @@ function examples() {
 
 function draw() {
     g.fc = frameCount;
-    algos[ALGO].run();
+    for (var i = 0; i < 5; i++) {
+        algos[ALGO].run(i * 60 + 20, 100, noise(i, i*2) + i, 2*i+int(noise(i*3)*10));
+    }
 
     if (g.fc > 1500) {
         noLoop();
         if (!g.saved) {
             g.saved = true;
-            save('test.png');
+            //save('test.png');
         }
     }
 }
@@ -88,7 +90,7 @@ function sandBezier(bezierCurve, chance, grains, jitter, useColor) {
             if (useColor) {
                 stroke(utils.randInt(0, 255 - i / steps * 255), utils.randInt(100, i / steps * 255), 255, utils.randInt(0, 70));
             } else {
-                stroke(255, 255, 255, utils.randInt(0, 70));
+                stroke(255, 255, 255, utils.randInt(0, lerp(0, 70, (1 / steps + 1) / 2)));
             }
             if (x < width / 2) {
                 if (x > -width / 2) {
