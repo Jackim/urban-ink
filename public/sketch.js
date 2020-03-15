@@ -25,6 +25,7 @@ function setup() {
 }
 
 function examples() {
+    /*
     for (var i = 0; i < 40; i++) {
         new prim.LineParent([i, 0], [sin(i) * 20, 50], [255, 255, 255, 0, 50], 2);
     }
@@ -39,16 +40,16 @@ function examples() {
         endShape();
     }
     for (var i = 0; i < 10; i++) {
-        //new LineParent([-i*1.5, -30], [-i*1.5, 30], [utils.randInt(0, 255), utils.randInt(0, 255), utils.randInt(0, 255), 0, 100], 2);
+        new LineParent([-i*1.5, -30], [-i*1.5, 30], [utils.randInt(0, 255), utils.randInt(0, 255), utils.randInt(0, 255), 0, 100], 2);
     }
-
+*/
     //drawLines([0, 0], [0, 0], 5, [255, 255, 255, 10, 120]);
-    /*
+    
     translate(-20, 0);
     drawLines([0, 0], [0, 0], 5, [255, 255, 255, 10, 120]);
     translate(-20, 0);
     drawLines([0, 0], [0, 0], 5, [255, 255, 255, 10, 120]);
-    */
+    
     /*
     for (var i = 0; i < 20; i++) {
         console.log(i * 20 - 240)

@@ -35,7 +35,7 @@ let sketch = function(p) {
 
     p.setup = function() {
         let numColours = 30;
-        let numCols = 40;
+        let numCols = 30;
 
         p.colorMode(p.HSB, 360, 100, 100, 1);
         p.createCanvas(p.windowWidth, p.windowHeight);
@@ -108,7 +108,8 @@ let sketch = function(p) {
 
         display() {
             p.push();
-            this.colour.setAlpha(p.random(0.75, 1));
+            p.strokeWeight(3);
+            this.colour.setAlpha(p.random(0.05, 0.2));
             p.stroke(this.colour);
             p.translate(this.pos.x + p.randomGaussian(0.25, 0.25), this.pos.y + p.randomGaussian(0.25, 0.25));
             p.rotate(this.angle);
