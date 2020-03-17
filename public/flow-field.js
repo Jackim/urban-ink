@@ -1,10 +1,13 @@
 let sketch = function(p) {
     
     let particles = [];
-    let seed = 1;
+    let seed = 3023;
     let count = 1;
     let particle_count;
     let grid = [];
+    var drawCurve;
+    let circleList = [];
+    let numColours = 10;
 
     p.setup = function() {
 
@@ -16,17 +19,17 @@ let sketch = function(p) {
 
         p.randomSeed(seed);
         p.noiseSeed(seed);
+        p.noStroke();
 
-        p.background(28, 4, 91); // background color
-        p.stroke(28, 50, 12, 1); // line/circle color
-
-        p.noLoop();
+        p.background(28, 4, 91, 1); // background color
+        //p.stroke(28, 50, 12, 1); // line/circle color
+        //p.blendMode(p.MULTIPLY);
 
         // make grid
         let left_x = p.int(p.windowWidth * -0.5);
-        let right_x = p.int(p.windowWidth * 1.5);
+        let right_x = p.int(p.windowWidth * 2);
         let top_y = p.int(p.windowHeight * -0.5);
-        let bottom_y = p.int(p.windowHeight * 1.5);
+        let bottom_y = p.int(p.windowHeight * 2);
 
         let resolution = p.int(p.windowWidth * 0.01);
         console.log(resolution);
@@ -56,10 +59,19 @@ let sketch = function(p) {
 
         function createColours(n) {
             let colours = [];
-            let initialColour = [p.random(0, 360) + p.randomGaussian(30, 30) % 360, p.randomGaussian(20, 25), p.randomGaussian(40, 25), p.randomGaussian(0.25, 0.25)];
+
+            let initialColour = [
+                p.random(0, 360) + p.randomGaussian(30, 30) % 360,
+                p.randomGaussian(20, 25),
+                //p.randomGaussian(60, 25),
+                90,
+                1
+            ];
+
             for (var i = 0; i < n; i++) {
                 let multiplier = p.random() > 0.5 ? 1 : -1;
                 initialColour[0] += p.randomGaussian(10, 10) * multiplier % 360;
+                
                 // saturation
                 if (initialColour[1] > 40) {
                     initialColour[1] -= 10;
@@ -68,6 +80,7 @@ let sketch = function(p) {
                 } else {
                     initialColour[1] += p.randomGaussian(15, 10) * multiplier % 100;
                 }
+                
                 // brightness
                 if (initialColour[2] > 50) {
                     initialColour[2] -= 10;
@@ -76,37 +89,53 @@ let sketch = function(p) {
                 } else {
                     initialColour[2] += p.randomGaussian(15, 10) * multiplier % 100;
                 }
-                initialColour[3] += p.random(0, 0.25) % 1;
-                colours.push(p.color(initialColour[0], initialColour[1], initialColour[2], initialColour[3]));
+
+                //initialColour[3] += p.random(0, 0.25) % 1;
+                
+                colours.push(
+                    p.color(initialColour[0], initialColour[1], initialColour[2], initialColour[3])
+                );
             }
             return colours;
         }
 
-        let colors = createColours(10);
+        let colors = createColours(numColours);
 
-        p.strokeWeight(1);
+        //p.strokeWeight(1);
 
-        console.log(grid.length);
-        console.log(grid[0].length);
-
-        p.stroke(colors[0]);
+        //p.stroke(colors[0]);
+        p.fill(colors[0]);
 
         let colorNum = 0;
 
-        function drawCurve() {
-            
-            let x = p.int(p.map(p.random(), 0.0, 1.0, 0.0, 1400.0));
-            let y = p.int(p.map(p.random(), 0.0, 1.0, 0.0, 120.0 * 7));
+        function noCollision(x0, y0, di0) {
+            x0 = p.int(x0);
+            y0 = p.int(y0);
+            for (circ in circleList) {
+                if (p.collideCircleCircle(x0, y0, di0, circleList[circ].x, circleList[circ].y, circleList[circ].di)) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-            for (var n = 0; n < 1000; n++) {
+        drawCurve = function() {
+            
+            let x = p.int(p.map(p.random(), 0.0, 1.0, 0.0, p.windowWidth));
+            let y = p.int(p.map(p.random(), 0.0, 1.0, 0.0, p.windowHeight));
+
+            for (var n = 0; n < 100; n++) {
+
                 if (p.random() < 0.1) {
                     colorNum++;
+
                     if (colorNum >= colors.length) {
                         colorNum = 0;
                     }
-                    p.stroke(colors[colorNum]);
+
+                    //p.stroke(colors[colorNum]);
+                    p.fill(colors[colorNum]);
                 }
-                p.point(x, y); // draw the point
 
                 let x_offset = x - left_x;
                 let y_offset = y - top_y;
@@ -114,11 +143,29 @@ let sketch = function(p) {
                 column_index = p.int(x_offset / resolution);
                 row_index = p.int(y_offset / resolution);
 
+                // drawing as points
+                //p.point(x, y); // draw the point
+
+                // darwing as circles
+                //console.log(isCollision(x, y));
+                if (grid[column_index] && grid[column_index][row_index]) {
+                    //colurNum = p.int(p.map(grid[column_index][row_index], 0.0, p.TWO_PI, 0, numColours-1));
+                    p.fill(colors[colorNum]);
+                    //p.stroke(colors[colorNum]);
+                }
+                var di = p.randomGaussian(5, 3);
+                if (noCollision(x, y, di)) {
+                    p.ellipse(x, y, di, di);
+                    circleList.push({x: p.int(x), y: p.int(y), di: di});
+                }
+
                 if (column_index > -1 && row_index > -1) {
                     grid_angle = grid[column_index][row_index];
 
-                    x_step = 0.2 * p.cos(grid_angle);
-                    y_step = 0.2 * p.sin(grid_angle);
+                    var step = p.randomGaussian(di, 2);
+
+                    x_step = step * p.cos(grid_angle);
+                    y_step = step * p.sin(grid_angle);
 
                     x = x + x_step;
                     y = y + y_step;
@@ -127,15 +174,17 @@ let sketch = function(p) {
                 }
             }
         }
-
-        for (var i = 0; i < 1000; i++) {
-            drawCurve();
-        }
-        
     }
 
-    p.draw = function() {
+    let counter = 0;
 
+    p.draw = function() {
+        drawCurve();
+        counter++;
+        if (counter == 1000) {
+            console.log("done");
+            p.noLoop();
+        }
     }
 
     p.keyPressed = function() {
