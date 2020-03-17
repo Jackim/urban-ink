@@ -21,6 +21,7 @@
     "author": "Jose Luis Garcia del Castillo",
     "license": "tbd",
     "devDependencies": {
+        "@timohausmann/quadtree-js": "^1.2.1",
         "electron": "3.0.0",
         "electron-builder": "20.28.4",
         "electron-reload": "1.2.5",
