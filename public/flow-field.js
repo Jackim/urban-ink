@@ -20,7 +20,7 @@ let sketch = function(p) {
 
     p.setup = function() {
 
-        colorFunc = function(n) {
+        colorFunc = function(n, black) {
             let colours = [];
 
             let initialColour = [
@@ -42,6 +42,10 @@ let sketch = function(p) {
                     initialColour[1] += 10;
                 } else {
                     initialColour[1] += p.randomGaussian(15, 10) * multiplier % 100;
+                }
+
+                if (black) {
+                    initialColour[1] = 0;
                 }
                 
                 // brightness
@@ -81,7 +85,7 @@ let sketch = function(p) {
         p.noiseSeed(seed);
         p.noStroke();
 
-        p.background(28, 4, 9, 1); // background color
+        p.background(28, 4, 91, 1); // background color
 
         // make grid
         let left_x = p.int(p.windowWidth * -0.5);
@@ -94,11 +98,15 @@ let sketch = function(p) {
         let num_columns = p.int((right_x - left_x) / resolution);
         let num_rows = p.int((bottom_y - top_y) / resolution);
 
-        gridFunc = function() {
+        gridFunc = function(round) {
             for (var col = 0; col < num_columns; col++) {
                 grid[col] = []
                 for (var row = 0; row < num_rows; row++) {
-                    grid[col][row] = p.map(p.noise(row * 0.01, col * 0.01), 0.0, 1.0, 0.0, p.TWO_PI); // determine angle at grid location
+                    var val = p.map(p.noise(row * 0.01, col * 0.01), 0.0, 1.0, 0.0, p.TWO_PI); // determine angle at grid location
+                    if (round) {
+                        val = p.round(val, round);
+                    }
+                    grid[col][row] = val; 
                 }
             }
         }
@@ -106,6 +114,7 @@ let sketch = function(p) {
         gridFunc();
 
         function drawGrid() {
+            // visualize the grid
             for (var col = 0; col < grid.length; col++) {
                 for (var row = 0; row < grid[col].length; row++) {
                     p.line(
@@ -118,11 +127,8 @@ let sketch = function(p) {
             }
         }
 
-        colors = colorFunc(numColours);
+        colors = colorFunc(numColours, true);
 
-        //p.strokeWeight(1);
-
-        //p.stroke(colors[0]);
         p.fill(colors[0]);
 
         let colorNum = 0;
@@ -140,21 +146,11 @@ let sketch = function(p) {
 
         drawCurve = function() {
             
+            // start x and y of each curve
             let x = p.int(p.map(p.random(), 0.0, 1.0, 0.0, p.windowWidth));
             let y = p.int(p.map(p.random(), 0.0, 1.0, 0.0, p.windowHeight));
 
             for (var n = 0; n < 200; n++) {
-
-                if (p.random() < 0.05) {
-                    //colorNum++;
-
-                    if (colorNum >= colors.length) {
-                        //colorNum = 0;
-                    }
-
-                    //p.stroke(colors[colorNum]);
-                    //p.fill(colors[colorNum]);
-                }
 
                 let x_offset = x - left_x;
                 let y_offset = y - top_y;
@@ -167,16 +163,21 @@ let sketch = function(p) {
                     colorNum = p.int(p.map(grid[column_index][row_index] + p.randomGaussian(0, 0.2), 0.0, p.TWO_PI, 0, numColours - 1), true);
                     p.fill(colors[colorNum]);
                 }
-                var num = p.abs(n - 50);
-                var di = p.randomGaussian((p.abs(num - 50) / 10), 0.01);
+
+                var di = p.randomGaussian(8, 5); // diamater
+                if (di > 9) {
+                    di = 9; // diameter cap
+                }
 
                 var collisions = tree.retrieve({
                     x: x,
                     y: y,
                     width: di,
                     height: di
-                });
+                }); // add to quadtree
 
+
+                // collision checking
                 if (collisions.length > 0) {
                     if (noCollision(x, y, di, collisions)) {
                         p.ellipse(x, y, di, di);
@@ -197,13 +198,14 @@ let sketch = function(p) {
                     });
                 }
 
+                // continue moving if still in bounds, else stop the line
                 if (column_index > -1 && row_index > -1) {
                     grid_angle = grid[column_index][row_index];
 
                     var step = p.randomGaussian(di, 2);
 
-                    x_step = (step - 5) * p.cos(grid_angle);
-                    y_step = (step - 5) * p.sin(grid_angle);
+                    x_step = (step + 2) * p.cos(grid_angle);
+                    y_step = (step + 2) * p.sin(grid_angle);
 
                     x = x + x_step;
                     y = y + y_step;
@@ -219,15 +221,9 @@ let sketch = function(p) {
     p.draw = function() {
         drawCurve();
         counter++;
-        if (counter == 100) {
+        if (counter == 250) {
             console.log("done");
-            seed = p.floor(p.random(4000));
-            console.log("seed: " + seed);
-            p.randomSeed(seed);
-            p.noiseSeed(seed);
-            gridFunc();
-            colors = colorFunc(10);
-            counter = 0;
+            p.noLoop();
         }
     }
 
@@ -239,18 +235,6 @@ let sketch = function(p) {
             p.noLoop();
         } else if (p.keyCode === p.RIGHT_ARROW) {
             p.loop();
-        }
-    }
-
-    class Particle {
-
-        constructor(x, y, angle, colour, index) {
-        }
-
-        update() {
-        }
-
-        display() {
         }
     }
 }
